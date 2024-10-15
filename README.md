@@ -63,7 +63,8 @@ public interface Map<K, V> {
 </p>
 
 2. Complete o código em falta no `main()`, utilizando as operações de `Map`.
-2. 
+
+   
 
 3. Por forma a poder testar a implementação da classe `MapBST` forneça a implementação dos seguintes dois métodos auxiliares:
 
