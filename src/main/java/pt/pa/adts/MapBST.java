@@ -11,7 +11,7 @@ import java.util.List;
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  */
-public class MapBST<K extends Comparable<K>, V> implements Map<K,V> {
+public class MapBST<K extends Comparable<K>, V> implements Map<K, V> {
 
     private BSTNode root;
 
@@ -21,9 +21,9 @@ public class MapBST<K extends Comparable<K>, V> implements Map<K,V> {
 
     @Override
     public V put(K key, V value) throws NullPointerException {
-        if(key == null) throw new NullPointerException("This implementation does not support null keys.");
+        if (key == null) throw new NullPointerException("This implementation does not support null keys.");
 
-        if(isEmpty()) {
+        if (isEmpty()) {
             this.root = new BSTNode(key, value, null, null, null);
             return null;
         } else {
@@ -32,83 +32,79 @@ public class MapBST<K extends Comparable<K>, V> implements Map<K,V> {
     }
 
     private V insertBST(K key, V value, BSTNode treeRoot) {
-        int comparison = key.compareTo( treeRoot.key );
-        if( comparison == 0) {
-            //key already found, replace value blindly
+        int comparison = key.compareTo(treeRoot.key);
+        if (comparison == 0) {
+            // key already found, replace value blindly
             V oldValue = treeRoot.value;
             treeRoot.value = value;
             return oldValue;
-        }
-        else if( comparison < 0 ) { //insert into left sub-tree
-            if( treeRoot.left == null) {
+        } else if (comparison < 0) { // insert into left sub-tree
+            if (treeRoot.left == null) {
                 treeRoot.left = new BSTNode(key, value, treeRoot, null, null);
-                return null; //no mapping previously existed
-            }
-            else
-                return insertBST(key, value, treeRoot.left); //recursive call
-        }
-        else { //insert into right sub-tree
-            if( treeRoot.right == null) {
+                return null; // no mapping previously existed
+            } else
+                return insertBST(key, value, treeRoot.left); // recursive call
+        } else { // insert into right sub-tree
+            if (treeRoot.right == null) {
                 treeRoot.right = new BSTNode(key, value, treeRoot, null, null);
-                return null; //no mapping previously existed
-            }
-            else
-                return insertBST(key, value, treeRoot.right); //recursive call
+                return null; // no mapping previously existed
+            } else
+                return insertBST(key, value, treeRoot.right); // recursive call
         }
     }
 
     @Override
     public V get(K key) throws NullPointerException {
-        if(key == null) throw new NullPointerException("This implementation does not support null keys.");
+        if (key == null) throw new NullPointerException("This implementation does not support null keys.");
 
         BSTNode nodeForKey = searchNodeWithKey(key, this.root);
-        if(nodeForKey == null) return null;
+        if (nodeForKey == null) return null;
         else return nodeForKey.value;
     }
 
     @Override
     public V remove(K key) throws NullPointerException {
-        if(key == null) throw new NullPointerException("This implementation does not support null keys.");
+        if (key == null) throw new NullPointerException("This implementation does not support null keys.");
 
         BSTNode nodeForKey = searchNodeWithKey(key, this.root);
 
-        if(nodeForKey == null) return null; //mapping does not exist
+        if (nodeForKey == null) return null; // mapping does not exist
 
-        //Remove the node based on the three possible scenarios
+        // Remove the node based on the three possible scenarios
         BSTNode parent = nodeForKey.parent;
         V removedValue = nodeForKey.value;
 
-        //case 1: external node (no subtrees), just remove the node from the tree
-        if( nodeForKey.left == null && nodeForKey.right == null ) {
-            if(parent == null) { //its must be the root node, because it has no parent
+        // case 1: external node (no subtrees), just remove the node from the tree
+        if (nodeForKey.left == null && nodeForKey.right == null) {
+            if (parent == null) { // its must be the root node, because it has no parent
                 this.root = null;
-            } else if( parent.left == nodeForKey ) {
+            } else if (parent.left == nodeForKey) {
                 parent.left = null;
-            } else { //parent.right == treeRoot
+            } else { // parent.right == treeRoot
                 parent.right = null;
             }
         }
-        //case 3: has both sub-tree; two possible methods
-        //1 - replace node contents with rightmost contents of the left sub-tree (maximum key)
-        //2 - replace node contents with leftmost contents of the right sub-tree (minimum key)
-        //Following code uses method #2
-        else if( nodeForKey.left != null && nodeForKey.right != null ) {
+        // case 3: has both sub-trees; two possible methods
+        // 1 - replace node contents with rightmost contents of the left sub-tree (maximum key)
+        // 2 - replace node contents with leftmost contents of the right sub-tree (minimum key)
+        // Following code uses method #2
+        else if (nodeForKey.left != null && nodeForKey.right != null) {
             BSTNode minimumRight = getLeftmostNode(nodeForKey.right);
-            //the following order is critical; remove before replacing
+            // the following order is critical; remove before replacing
             remove(minimumRight.key);
             nodeForKey.key = minimumRight.key;
             nodeForKey.value = minimumRight.value;
 
         }
-        //case 2: only has one sub-tree; replace node with sub-tree
+        // case 2: only has one sub-tree; replace node with sub-tree
         else {
-            //which exists? left or right sub-tree?
+            // which exists? left or right sub-tree?
             BSTNode subTree = (nodeForKey.left != null) ? nodeForKey.left : nodeForKey.right;
 
-            if(nodeForKey == this.root) { //it may be the root node
+            if (nodeForKey == this.root) { // it may be the root node
                 this.root = subTree;
             } else {
-                if( parent.left == nodeForKey ) {
+                if (parent.left == nodeForKey) {
                     parent.left = subTree;
                 } else {
                     parent.right = subTree;
@@ -116,22 +112,35 @@ public class MapBST<K extends Comparable<K>, V> implements Map<K,V> {
             }
         }
 
-        return removedValue; //return previously associated value with removed key
+        return removedValue; // return previously associated value with removed key
     }
 
     private BSTNode getLeftmostNode(BSTNode treeRoot) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (treeRoot == null) return null;
+        while (treeRoot.left != null) {
+            treeRoot = treeRoot.left;
+        }
+        return treeRoot;
     }
 
     @Override
     public boolean containsKey(K key) throws NullPointerException {
-        if(key == null) throw new NullPointerException("This implementation does not support null keys.");
+        if (key == null) throw new NullPointerException("This implementation does not support null keys.");
 
         return searchNodeWithKey(key, this.root) != null;
     }
 
     private BSTNode searchNodeWithKey(K key, BSTNode treeRoot) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (treeRoot == null) return null;
+
+        int comparison = key.compareTo(treeRoot.key);
+        if (comparison == 0) {
+            return treeRoot; // found
+        } else if (comparison < 0) {
+            return searchNodeWithKey(key, treeRoot.left); // search in left subtree
+        } else {
+            return searchNodeWithKey(key, treeRoot.right); // search in right subtree
+        }
     }
 
     @Override
@@ -142,11 +151,11 @@ public class MapBST<K extends Comparable<K>, V> implements Map<K,V> {
     }
 
     private void appendKeys(BSTNode treeRoot, List<K> keys) {
-        if(treeRoot == null) return;
+        if (treeRoot == null) return;
 
-        //pre-order traversal
-        keys.add(treeRoot.key);
+        // in-order traversal
         appendKeys(treeRoot.left, keys);
+        keys.add(treeRoot.key);
         appendKeys(treeRoot.right, keys);
     }
 
@@ -158,11 +167,11 @@ public class MapBST<K extends Comparable<K>, V> implements Map<K,V> {
     }
 
     private void appendValues(BSTNode treeRoot, List<V> values) {
-        if(treeRoot == null) return;
+        if (treeRoot == null) return;
 
-        //pre-order traversal
-        values.add(treeRoot.value);
+        // in-order traversal
         appendValues(treeRoot.left, values);
+        values.add(treeRoot.value);
         appendValues(treeRoot.right, values);
     }
 
@@ -172,8 +181,16 @@ public class MapBST<K extends Comparable<K>, V> implements Map<K,V> {
     }
 
     private int size(BSTNode treeRoot) {
-        if(treeRoot == null) return 0;
+        if (treeRoot == null) return 0;
         else return 1 + size(treeRoot.left) + size(treeRoot.right);
+    }
+
+    // Method to calculate the height of the tree
+    private int height(BSTNode treeRoot) {
+        if (treeRoot == null) return 0; // height of an empty tree is 0
+        int leftHeight = height(treeRoot.left);
+        int rightHeight = height(treeRoot.right);
+        return Math.max(leftHeight, rightHeight) + 1; // height of the current node
     }
 
     @Override
@@ -188,25 +205,21 @@ public class MapBST<K extends Comparable<K>, V> implements Map<K,V> {
 
     @Override
     public String toString() {
-        if(isEmpty()) return "Empty binary search tree.";
+        if (isEmpty()) return "Empty binary search tree.";
 
         StringBuilder sb = new StringBuilder();
         inOrderPrettyString(root, new StringBuilder(), true, sb);
-
-        return String.format("MapBST of size = %d:", size())
-                + "\n"
-                + sb.toString();
+        return String.format("MapBST of size = %d and height = %d:\n%s", size(), height(this.root), sb.toString());
     }
 
     private void inOrderPrettyString(BSTNode treeRoot, StringBuilder prefix, boolean isTail, StringBuilder sb) {
-
-        if(treeRoot.right != null) {
+        if (treeRoot.right != null) {
             inOrderPrettyString(treeRoot.right, new StringBuilder().append(prefix).append(isTail ? "│   " : "    "), false, sb);
         }
 
         sb.append(prefix).append(isTail ? "└── " : "┌── ").append(String.format("{key=%s, value=%s", treeRoot.key, treeRoot.value)).append("\n");
 
-        if(treeRoot.left != null) {
+        if (treeRoot.left != null) {
             inOrderPrettyString(treeRoot.left, new StringBuilder().append(prefix).append(isTail ? "    " : "│   "), true, sb);
         }
     }
@@ -225,6 +238,14 @@ public class MapBST<K extends Comparable<K>, V> implements Map<K,V> {
             this.parent = parent;
             this.left = left;
             this.right = right;
+        }
+
+        @Override
+        public String toString() {
+            return "{" +
+                    "key=" + key +
+                    ", value=" + value +
+                    '}';
         }
     }
 }
